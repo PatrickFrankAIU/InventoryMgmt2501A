@@ -128,6 +128,55 @@ function displayShipment() {
     });
 }
 
+function addOrder() {
+    let categoryInput = document.getElementById('categoryInput').value;
+    let productInput = document.getElementById('productInput').value;
+    let quantityInput = parseInt(document.getElementById('quantityInput').value);
+
+    let category = inventory.find(cat => cat.category === categoryInput);
+    if (!category) {
+        category = {category: categoryInput, products: []};
+        inventory.push(category);
+    }
+
+    let product = category.products.find(prod => prod.product === productInput);
+    if (product) {
+        product.quantity -= quantityInput;
+    } else {
+        category.products.push({product: productInput, quantity: -quantityInput});
+    }
+
+    let orderCategory = order.find(cat => cat.category === categoryInput);
+    if (!orderCategory) {
+        orderCategory = {category: categoryInput, products: []};
+        order.push(orderCategory);
+    }
+
+    let orderProduct = orderCategory.products.find(prod => prod.product === productInput);
+    if (orderProduct) {
+        orderProduct.quantity += quantityInput;
+    } else {
+        orderCategory.products.push({product: productInput, quantity: quantityInput});
+    }
+
+    displayInventory();
+    displayOrder();
+}
+
+function displayOrder() {
+    let orderDisplay = document.getElementById('orderDisplay');
+    orderDisplay.innerHTML = '';
+
+    order.forEach(item => {
+        let categoryEl = document.createElement('div');
+        categoryEl.innerHTML = "<strong>" + item.category + "</strong>";
+        item.products.forEach(product => {
+            categoryEl.innerHTML += "<div>" + product.product + ": " + product.quantity + "</div>";
+        });
+        orderDisplay.appendChild(categoryEl);
+    });
+}
+
 displayInventory();
 createCategories();
 createProducts();
