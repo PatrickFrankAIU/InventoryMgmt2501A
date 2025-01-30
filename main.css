@@ -52,3 +52,7 @@ button:hover {
     margin-top: 10px;
     font-weight: bold;
 }
+
+#categoryInput, #productInput {
+    color: rgb(8, 136, 158);
+}

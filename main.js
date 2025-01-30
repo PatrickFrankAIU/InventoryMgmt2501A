@@ -28,13 +28,106 @@ function displayInventory() {
     let inventoryDisplay = document.getElementById('inventoryDisplay');
     inventoryDisplay.innerHTML = '';
 
-    inventory.forEach(category => {
+    inventory.forEach(item => {
         let itemGroup = document.createElement('div');
-        itemGroup.innerHTML = '<strong>' + category.category + ':</strong>';
-        category.products.forEach(product => {
-            itemGroup.innerHTML += "<div>" + product.product + ": " + product.quantity;
+        itemGroup.innerHTML = '<strong>' + item.category + ':</strong>';
+        item.products.forEach(prodItem => {
+            itemGroup.innerHTML += "<div>" + prodItem.product + ": " + prodItem.quantity;
         });
         inventoryDisplay.appendChild(itemGroup);
     });
 }
-displayInventory()
+
+// create the categories control
+function createCategories() {
+    inventory.forEach(item => {
+        let categoryOption = document.createElement('option');
+        categoryOption.value = item.category;
+        categoryOption.textContent = item.category;
+        categoryMenu.appendChild(categoryOption);
+    });
+}
+
+// create the products control
+function createProducts() {
+    productMenu.innerHTML = '';
+    let selectedCategory = inventory.find(item => item.category === categoryMenu.value);
+    if (selectedCategory) {
+        selectedCategory.products.forEach(item => {
+            let productOption = document.createElement('option');
+            productOption.value = item.product;
+            productOption.textContent = item.product;
+            productMenu.appendChild(productOption);
+        });
+    }
+}
+categoryMenu.addEventListener('change', createProducts);
+
+function addNewCategory() {
+    let newCategoryInput = document.getElementById('newCategoryInput').value;
+    if (newCategoryInput) {
+        inventory.push({
+            category: newCategoryInput,
+            products: [] // test with this off
+        });
+        let categoryOption = document.createElement('option');
+        categoryOption.value = newCategoryInput;
+        categoryOption.textContent = newCategoryInput;
+        categoryMenu.appendChild(categoryOption);
+        document.getElementById('newCategoryInput').value = '';
+        displayInventory();
+    }
+}
+document.getElementById('addCategoryButton').addEventListener('click', addNewCategory);
+
+function addShipment() {
+    let categoryInput = document.getElementById('categoryInput').value;
+    let productInput = document.getElementById('productInput').value;
+    let quantityInput = parseInt(document.getElementById('quantityInput').value);
+
+    let category = inventory.find(cat => cat.category === categoryInput);
+    if (!category) {
+        category = {category: categoryInput, product: []};
+        inventory.push(category);
+    }
+
+    let product = category.products.find(prod => prod.product === productInput);
+    if (product) {
+        product.quantity += quantityInput;
+    } else {
+        category.products.push({product: productInput, quantity: quantityInput});
+    }
+
+    let shipCategory = shipment.find(cat => cat.category === categoryInput);
+    if (!shipCategory) {
+        shipCategory = {category: categoryInput, products: []};
+        shipment.push(shipCategory);
+    }
+
+    let shipProduct = shipCategory.products.find(prod => prod.product === productInput);
+    if (shipProduct) {
+        shipProduct.quantity += quantityInput;
+    } else {
+        shipCategory.products.push({product: productInput, quantity: quantityInput});
+    }
+    displayInventory();
+    displayShipment();
+}
+
+function displayShipment() {
+    let shipmentDisplay = document.getElementById('shipmentDisplay');
+    shipmentDisplay.innerHTML = '';
+    shipment.forEach(item => {
+        let categoryEl = document.createElement('div');
+        categoryEl.innerHTML = "<strong>" + item.category + "</strong>";
+        category.products.forEach(prodItem => {
+            categoryEl.innerHTML += "<div>" + prodItem.product + ": " + 
+                prodItem.quantity + "</div>";
+        });
+        shipmentDisplay.appendChild(categoryEl);
+    });
+}
+
+displayInventory();
+createCategories();
+createProducts();
