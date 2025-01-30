@@ -120,7 +120,7 @@ function displayShipment() {
     shipment.forEach(item => {
         let categoryEl = document.createElement('div');
         categoryEl.innerHTML = "<strong>" + item.category + "</strong>";
-        category.products.forEach(prodItem => {
+        item.products.forEach(prodItem => { // BUG: this one started with category
             categoryEl.innerHTML += "<div>" + prodItem.product + ": " + 
                 prodItem.quantity + "</div>";
         });
